@@ -1,1 +1,7 @@
+library(haven)
+library(tidyverse)
+library(estimatr)
 
+df <- read_csv("/Users/nautim/Desktop/Data and Econometrics/Predictions with ML/morg2014.csv")
+
+summary(df)
