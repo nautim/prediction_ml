@@ -13,9 +13,15 @@ df <- read_csv("/Users/nautim/Desktop/Data and Econometrics/Predictions with ML/
 
 
 # choosing all Education, Training, and Library Occupations (codes here https://osf.io/57n9q/)
-
 df_sub <- df %>%
   filter(occ2012 >= 2200 & occ2012 <= 2550)
 
 df_sub$occ2012 <- as.factor(df_sub$occ2012)
 summary(df_sub$occ2012)
+
+# updating the category names and changing the reference category to teachers in elementary and middle school (the biggest category)
+levels(df_sub$occ2012) <- c("postsec teachers", "preschool teachers", "elem & middle teachers", "second teachers", 
+                            "special teachers", "other teachers", "archivists/museums", "librarians", "libr technics",
+                            "teacher assists", "other educ workers")
+df_sub$occ2012 = relevel(df_sub$occ2012, ref = "elem & middle teachers")
+table(df_sub$occ2012)
