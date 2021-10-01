@@ -10,3 +10,12 @@ library(grid)
 
 # uploading data
 df <- read_csv("/Users/nautim/Desktop/Data and Econometrics/Predictions with ML/morg2014.csv")
+
+
+# choosing all Education, Training, and Library Occupations (codes here https://osf.io/57n9q/)
+
+df_sub <- df %>%
+  filter(occ2012 >= 2200 & occ2012 <= 2550)
+
+df_sub$occ2012 <- as.factor(df_sub$occ2012)
+summary(df_sub$occ2012)
