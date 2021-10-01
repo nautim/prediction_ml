@@ -66,5 +66,10 @@ summary(df_sub$ownchild)
 plot(density(df_sub$ownchild))
 
 
+# summary statistics of the main variables
+df_sub %>% dplyr::select(wage, lnwage, female, union_mem, age, ownchild, occ2012) %>% Hmisc::describe()
+
+
+
 
 
