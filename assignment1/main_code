@@ -47,4 +47,24 @@ df_sub %>%
 ## now it looks almost perfectly Gaussian 
 
 
+# preparing and summarising independent variables
+
+## female
+df_sub <- df_sub %>% dplyr::mutate(female = factor(as.numeric(sex == 2)))
+summary(df_sub$female)
+
+## union membership
+df_sub <- df_sub %>% dplyr::mutate(union_mem = as.factor(ifelse(unionmme == "Yes", 1, ifelse(unionmme == "No", 0, NA))))
+summary(df_sub$union_mem)
+
+## age
+summary(df_sub$age)
+plot(density(df_sub$age))
+
+## number of own children
+summary(df_sub$ownchild)
+plot(density(df_sub$ownchild))
+
+
+
 
