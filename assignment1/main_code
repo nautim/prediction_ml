@@ -25,3 +25,26 @@ levels(df_sub$occ2012) <- c("postsec teachers", "preschool teachers", "elem & mi
                             "teacher assists", "other educ workers")
 df_sub$occ2012 = relevel(df_sub$occ2012, ref = "elem & middle teachers")
 table(df_sub$occ2012)
+
+
+# preparing the main dependent variable for analysis; creating a consistent earnings per hour indicator
+df_sub <- df_sub %>% dplyr::mutate(wage = earnwke/uhourse)
+
+## deleting missings which cannot be imputed
+df_sub <- df_sub %>% filter(wage != Inf)
+
+df_sub %>%
+  ggplot(aes(x = wage)) +
+  geom_histogram(binwidth = 2)
+
+## plotting shows that there are some influential observations, and it could be better to use ln
+## since I use ln and some people earn between 0 and 1, I also artificially increase all wages by one dollar (for computing purposes)
+df_sub <- df_sub %>% dplyr::mutate(lnwage = log(wage + 1))
+
+df_sub %>%
+  ggplot(aes(x = lnwage)) +
+  geom_histogram(binwidth = 0.3)
+## now it looks almost perfectly Gaussian 
+
+
+
