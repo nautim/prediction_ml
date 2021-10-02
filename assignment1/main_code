@@ -216,8 +216,19 @@ stargazer(cv_mat, summary = F, digits=0, float=F, type="text")
 
 eval <- cbind(eval1,  t(cv_mat[5,2:5]))
 colnames(eval)[6] <- "Сross-validated RMSE"
+eval
 
-
+p <- eval %>%
+  ggplot(aes(x = `N predictors`)) + 
+  geom_line(aes(y = `Training RMSE`, colour = "Training RMSE")) +
+  geom_line(aes(y = `Сross-validated RMSE`, colour = "Сross-validated RMSE")) +
+  geom_line(aes(y = `BIC`/31000, colour = "BIC")) +
+  scale_y_continuous(
+    "RMSE", 
+    sec.axis = sec_axis(~.* 31000, name = "BIC")
+  ) + labs(title = "Models Diagnostics") + theme_bw()
+p$labels$colour <- "Diagnostics Criteria"
+p
 
 
 
