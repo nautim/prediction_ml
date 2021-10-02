@@ -82,44 +82,62 @@ ggplot(data = df_sub, aes(x = age, y = lnwage)) +
 df_sub <- df_sub %>% dplyr::mutate(agesq = age^2)
 
 ## median wage by sex and occupations
-
 df_sub %>%
   group_by(female) %>%
-  summarise(wage = median(wage, na.rm = T)) %>%
-  ggplot(aes(x = female, y = wage, fill = female)) + geom_bar(stat = "identity", width = 0.5) +
-  theme_bw() + geom_text(aes(label = round(wage, 2)), position = position_stack(vjust = 0.5)) +
-  labs(y = "median wage, $/hour") + theme(legend.position = "none")
-
+  summarise(mwage = median(wage, na.rm = T),
+            SE = sd(wage)/sqrt(n())) %>%
+  ggplot(aes(x = female, y = mwage, fill = female)) + geom_bar(stat = "identity", width = 0.5) +
+  theme_bw() + geom_text(aes(label = round(mwage, 2)), position = position_stack(vjust = 0.5)) +
+  labs(y = "median wage, $/hour", title = "Median wage by gender") + theme(legend.position = "none") +
+  geom_errorbar(aes(ymin = mwage - SE, ymax = mwage + SE),
+                size=.3,    # Thinner lines
+                width=.2,
+                position=position_dodge(.9), col = "grey")
 
 df_sub %>%
   group_by(female, occ2012) %>%
-  summarise(wage = median(wage, na.rm = T)) %>%
-  ggplot(aes(x = occ2012, y = wage, fill = female)) +
-  labs(y = "median wage, $/hour", x = "", title = "Occupations within the set") + theme_bw() +
+  summarise(mwage = median(wage, na.rm = T),
+            SE = sd(wage)/sqrt(n()))%>%
+  ggplot(aes(x = occ2012, y = mwage, fill = female)) +
+  labs(y = "median wage, $/hour", x = "", title = "Median wage by gender among different occupations") + theme_bw() +
   geom_bar(stat = "identity", width = 0.5, position = position_dodge()) +
   theme(axis.text.x = element_text(angle=90,hjust=1)) +
-  geom_text(aes(label = round(wage, 1)), position = position_dodge(0.8), vjust = -0.5) +
-  ylim(0, 35)
+  geom_text(aes(label = round(mwage, 1)), position = position_dodge(0.8), vjust = -0.5) +
+  ylim(0, 35) +
+  geom_errorbar(aes(ymin = mwage - SE, ymax = mwage + SE),
+                size=.3,    # Thinner lines
+                width=.2,
+                position=position_dodge(.5), col = "grey")
+
+
 
 ## median wage by union membership and occupations
-
 df_sub %>%
   group_by(union_mem) %>%
-  summarise(wage = median(wage, na.rm = T)) %>%
-  ggplot(aes(x = union_mem, y = wage, fill = union_mem)) + geom_bar(stat = "identity", width = 0.5) +
-  theme_bw() + geom_text(aes(label = round(wage, 2)), position = position_stack(vjust = 0.5)) +
-  labs(y = "median wage, $/hour", x = "union membership") + theme(legend.position = "none")
-
-
+  summarise(mwage = median(wage, na.rm = T),
+            SE = sd(wage)/sqrt(n())) %>%
+  ggplot(aes(x = union_mem, y = mwage, fill = union_mem)) + geom_bar(stat = "identity", width = 0.5) +
+  theme_bw() + geom_text(aes(label = round(mwage, 2)), position = position_stack(vjust = 0.5)) +
+  labs(y = "median wage, $/hour", x = "union membership", title = "Median wage by union membership") + theme(legend.position = "none") +
+  geom_errorbar(aes(ymin = mwage - SE, ymax = mwage + SE),
+                size=.3,    # Thinner lines
+                width=.2,
+                position=position_dodge(.9), col = "grey")
+                
 df_sub %>%
   group_by(union_mem, occ2012) %>%
-  summarise(wage = median(wage, na.rm = T)) %>%
-  ggplot(aes(x = occ2012, y = wage, fill = union_mem)) +
-  labs(y = "median wage, $/hour", x = "", title = "Occupations within the set") + theme_bw() +
+  summarise(mwage = median(wage, na.rm = T),
+            SE = sd(wage)/sqrt(n())) %>%
+  ggplot(aes(x = occ2012, y = mwage, fill = union_mem)) +
+  labs(y = "median wage, $/hour", x = "", title = "Median wage by union membership among different occupations") + theme_bw() +
   geom_bar(stat = "identity", width = 0.5, position = position_dodge()) +
   theme(axis.text.x = element_text(angle=90,hjust=1)) +
-  geom_text(aes(label = round(wage, 1)), position = position_dodge(0.8), vjust = -0.5) +
-  ylim(0, 35) + scale_fill_discrete(name = "union \n membership")
+  geom_text(aes(label = round(mwage, 1)), position = position_dodge(0.8), vjust = -0.5) +
+  ylim(0, 35) + scale_fill_discrete(name = "union \n membership") +
+  geom_errorbar(aes(ymin = mwage - SE, ymax = mwage + SE),
+                size=.3,    # Thinner lines
+                width=.2,
+                position=position_dodge(.5), col = "grey")
 
 
 ## number of children vs. lnwage - slightly squared trend (model should include ownchildsq)
