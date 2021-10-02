@@ -158,6 +158,29 @@ reg4.2 <- lm_robust(lnwage ~ age + agesq + female + union_mem + ownchild + ownch
 summary(reg4.2)
 
 
+# deriving BIC, RMSE in the full sample, and RSquare
+
+models <- c("reg1.1", "reg2.1","reg3.1", "reg4.1")
+BIC <- c()
+RMSE <- c()
+RSquared <- c()
+regr <- c()
+k <- c()
+
+for ( i in 1:length(models)){
+  BIC[i] <- BIC(get(models[i]))
+  RMSE[i] <- RMSE(predict(get(models[i])), get(models[i])$model$lnwage)
+  RSquared[i] <-summary(get(models[i]))$r.squared
+  regr[[i]] <- coeftest(get(models[i]), vcov = sandwich)
+  k[i] <- get(models[i])$rank - 1
+}
+
+eval <- data.frame(models, k, RSquared, RMSE, BIC)
+eval <- eval %>%
+  mutate(models = paste0("(",gsub("reg","",models),")")) %>%
+  rename(Model = models, "R-squared" = RSquared, "Training RMSE" = RMSE, "N predictors" = k)
+
+
 
 
 
