@@ -70,6 +70,68 @@ plot(density(df_sub$ownchild))
 df_sub %>% dplyr::select(wage, lnwage, female, union_mem, age, ownchild, occ2012) %>% Hmisc::describe()
 
 
+# preliminary visualisations
+
+## age vs. lnwage - slightly squared trend (model should include agesq)
+ggplot(data = df_sub, aes(x = age, y = lnwage)) +
+  geom_point(size = 1,  shape = 16, alpha = 0.8, show.legend=F, na.rm = TRUE) + 
+  geom_smooth(method="loess", se=F, size=1, span=0.9) +
+  labs(x = "age (years)",y = "ln(earnings per hour)") +
+  theme_bw()
+
+df_sub <- df_sub %>% dplyr::mutate(agesq = age^2)
+
+## median wage by sex and occupations
+
+df_sub %>%
+  group_by(female) %>%
+  summarise(wage = median(wage, na.rm = T)) %>%
+  ggplot(aes(x = female, y = wage, fill = female)) + geom_bar(stat = "identity", width = 0.5) +
+  theme_bw() + geom_text(aes(label = round(wage, 2)), position = position_stack(vjust = 0.5)) +
+  labs(y = "median wage, $/hour") + theme(legend.position = "none")
+
+
+df_sub %>%
+  group_by(female, occ2012) %>%
+  summarise(wage = median(wage, na.rm = T)) %>%
+  ggplot(aes(x = occ2012, y = wage, fill = female)) +
+  labs(y = "median wage, $/hour", x = "", title = "Occupations within the set") + theme_bw() +
+  geom_bar(stat = "identity", width = 0.5, position = position_dodge()) +
+  theme(axis.text.x = element_text(angle=90,hjust=1)) +
+  geom_text(aes(label = round(wage, 1)), position = position_dodge(0.8), vjust = -0.5) +
+  ylim(0, 35)
+
+## median wage by union membership and occupations
+
+df_sub %>%
+  group_by(union_mem) %>%
+  summarise(wage = median(wage, na.rm = T)) %>%
+  ggplot(aes(x = union_mem, y = wage, fill = union_mem)) + geom_bar(stat = "identity", width = 0.5) +
+  theme_bw() + geom_text(aes(label = round(wage, 2)), position = position_stack(vjust = 0.5)) +
+  labs(y = "median wage, $/hour", x = "union membership") + theme(legend.position = "none")
+
+
+df_sub %>%
+  group_by(union_mem, occ2012) %>%
+  summarise(wage = median(wage, na.rm = T)) %>%
+  ggplot(aes(x = occ2012, y = wage, fill = union_mem)) +
+  labs(y = "median wage, $/hour", x = "", title = "Occupations within the set") + theme_bw() +
+  geom_bar(stat = "identity", width = 0.5, position = position_dodge()) +
+  theme(axis.text.x = element_text(angle=90,hjust=1)) +
+  geom_text(aes(label = round(wage, 1)), position = position_dodge(0.8), vjust = -0.5) +
+  ylim(0, 35) + scale_fill_discrete(name = "union \n membership")
+
+
+## number of children vs. lnwage - slightly squared trend (model should include ownchildsq)
+df_sub %>%
+  ggplot(aes(x = ownchild, y = lnwage)) +
+  geom_jitter(size = 1,  shape = 16, alpha = 0.8, show.legend = F, na.rm = TRUE) + 
+  geom_smooth(method = "loess", se = F, size = 1, span = 0.9) +
+  labs(x = "number of children", y = "ln(earnings per hour)") +
+  theme_bw()
+
+df_sub <- df_sub %>% dplyr::mutate(ownchildsq = ownchild^2)
+
 
 
 
