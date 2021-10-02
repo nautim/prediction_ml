@@ -6,6 +6,8 @@ library(sandwich)
 library(stargazer)
 library(caret)
 library(grid)
+library(patchwork) # To display 2 charts together
+library(hrbrthemes)
 
 
 # uploading data
