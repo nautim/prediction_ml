@@ -133,5 +133,31 @@ df_sub %>%
 df_sub <- df_sub %>% dplyr::mutate(ownchildsq = ownchild^2)
 
 
+# building models
+
+reg1.1 <- lm(lnwage ~ age + agesq, data = df_sub) 
+summary(reg1.1)
+reg1.2 <- lm_robust(lnwage ~ age + agesq, data = df_sub, se_type = "HC1")
+summary(reg1.2)
+
+reg2.1 <- lm(lnwage ~ age + agesq + female + union_mem + ownchild + ownchildsq, data = df_sub) 
+summary(reg2.1)
+reg2.2 <- lm_robust(lnwage ~ age + agesq + female + union_mem + ownchild + ownchildsq, data = df_sub, se_type = "HC1")
+summary(reg2.2)
+
+reg3.1 <- lm(lnwage ~ age + agesq + female + union_mem + ownchild + ownchildsq + occ2012 + female*union_mem, data = df_sub) 
+summary(reg3.1)
+reg3.2 <- lm_robust(lnwage ~ age + agesq + female + union_mem + ownchild + ownchildsq + occ2012 + female*union_mem, data = df_sub, se_type = "HC1")
+summary(reg3.2)
+
+reg4.1 <- lm(lnwage ~ age + agesq + female + union_mem + ownchild + ownchildsq + occ2012 + female*union_mem + 
+               occ2012*female + occ2012*union_mem + age*female + age*union_mem, data = df_sub) 
+summary(reg4.1)
+reg4.2 <- lm_robust(lnwage ~ age + agesq + female + union_mem + ownchild + ownchildsq + occ2012 + female*union_mem + 
+               occ2012*female + occ2012*union_mem + age*female + age*union_mem, data = df_sub, se_type = "HC1")
+summary(reg4.2)
+
+
+
 
 
