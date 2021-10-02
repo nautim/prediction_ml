@@ -214,7 +214,7 @@ cv_mat
 stargazer(cv_mat, summary = F, digits=0, float=F, type="text")
 
 
-eval <- cbind(eval1,  t(cv_mat[5,2:5]))
+eval <- cbind(eval,  t(cv_mat[5,2:5]))
 colnames(eval)[6] <- "Сross-validated RMSE"
 eval
 
