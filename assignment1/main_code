@@ -181,6 +181,37 @@ eval <- eval %>%
   rename(Model = models, "R-squared" = RSquared, "Training RMSE" = RMSE, "N predictors" = k)
 
 
+# cross-validation
+
+k <- 4
+
+cv1 <- train(lnwage ~ age + agesq, df_sub, method = "lm", trControl = trainControl(method = "cv", number = k))
+cv2 <- train(lnwage ~ age + agesq + female + union_mem + ownchild + ownchildsq, df_sub, method = "lm", trControl = trainControl(method = "cv", number = k))
+cv3 <- train(lnwage ~ age + agesq + female + union_mem + ownchild + ownchildsq + occ2012 + female*union_mem, df_sub, method = "lm", trControl = trainControl(method = "cv", number = k), na.action = "na.omit")
+cv4 <- train(lnwage ~ age + agesq + female + union_mem + ownchild + ownchildsq + occ2012 + female*union_mem + 
+               occ2012*female + occ2012*union_mem + age*female + age*union_mem, df_sub, method = "lm", trControl = trainControl(method = "cv", number = k), na.action = "na.omit")
+
+cv <- c("cv1", "cv2", "cv3", "cv4")
+rmse_cv <- c()
+
+for(i in 1:length(cv)){
+  rmse_cv[i] <- sqrt((get(cv[i])$resample[[1]][1]^2 +
+                        get(cv[i])$resample[[1]][2]^2 +
+                        get(cv[i])$resample[[1]][3]^2 +
+                        get(cv[i])$resample[[1]][4]^2)/4)
+}
+
+cv_mat <- data.frame(rbind(cv1$resample[4], "Average"),
+                     rbind(cv1$resample[1], rmse_cv[1]),
+                     rbind(cv2$resample[1], rmse_cv[2]),
+                     rbind(cv3$resample[1], rmse_cv[3]),
+                     rbind(cv4$resample[1], rmse_cv[4])
+)
+
+colnames(cv_mat)<-c("Resample","Model1", "Model2", "Model3", "Model4")
+cv_mat
+
+stargazer(cv_mat, summary = F, digits=0, float=F, type="text")
 
 
 
