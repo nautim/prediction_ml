@@ -177,6 +177,19 @@ reg4.2 <- lm_robust(lnwage ~ age + agesq + female + union_mem + ownchild + ownch
                occ2012*female + occ2012*union_mem + age*female + age*union_mem, data = df_sub, se_type = "HC1")
 summary(reg4.2)
 
+# adding regression table with robust SE
+
+cov1 <- vcovHC(reg1.1, type = "HC1")
+robust.se1 <- sqrt(diag(cov1))
+cov2 <- vcovHC(reg2.1, type = "HC1")
+robust.se2 <- sqrt(diag(cov2))
+cov3 <- vcovHC(reg3.1, type = "HC1")
+robust.se3 <- sqrt(diag(cov3))
+cov4 <- vcovHC(reg4.1, type = "HC1")
+robust.se4 <- sqrt(diag(cov4))
+
+stargazer(reg1.1, reg2.1, reg3.1, reg4.1, column.sep.width = "1pt", single.row = TRUE, font.size = "tiny",  se=list(robust.se1, robust.se2, robust.se3, robust.se4), title = "Regression Table")
+
 
 # deriving BIC, RMSE in the full sample, and RSquare
 
