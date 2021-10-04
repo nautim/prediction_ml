@@ -284,7 +284,9 @@ eval$rmse_train <- rmse_train
 eval$rmse_test <- rmse_test
 
 
-p <- eval %>%
+# plotting diagnostics
+
+p1 <- eval %>%
   ggplot(aes(x = `N predictors`)) + 
   geom_line(aes(y = `Training RMSE`, colour = "Training RMSE")) +
   geom_line(aes(y = `Сross-validated RMSE`, colour = "Сross-validated RMSE")) +
@@ -293,9 +295,16 @@ p <- eval %>%
     "RMSE", 
     sec.axis = sec_axis(~.* 31000, name = "BIC")
   ) + labs(title = "Models Diagnostics") + theme_bw()
-p$labels$colour <- "Diagnostics Criteria"
-p
+p1$labels$colour <- "Diagnostics Criteria"
+p1
 
+p2 <- eval %>%
+  ggplot(aes(x = `N predictors`)) + 
+  geom_line(aes(y = `rmse_train`, colour = "Trained RMSE")) +
+  geom_line(aes(y = `rmse_test`, colour = "Tested RMSE")) +
+  labs(title = "Models Diagnostics") + theme_bw()
+p2$labels$colour <- "Diagnostics Criteria"
+p2
 
 
 
