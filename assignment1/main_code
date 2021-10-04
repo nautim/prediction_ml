@@ -251,6 +251,39 @@ eval <- cbind(eval,  t(cv_mat[5,2:5]))
 colnames(eval)[6] <- "Сross-validated RMSE"
 eval
 
+n_folds <- k
+folds_i <- sample(rep(1:n_folds, length.out = nrow(df_sub)))
+
+rmse_train <- c()
+rmse_test <- c()
+
+mse_lev <- function(pred, y) {
+  # Mean Squared Error for log models
+  (mean((pred - y)^2, na.rm=T))
+}
+
+# Do the k-fold estimation
+for (k in 1:n_folds) {
+  test_i <- which(folds_i == k)
+  # Train sample: all except test_i
+  data_train <- df_sub[-test_i, ]
+  # Test sample
+  data_test <- df_sub[test_i, ]
+  # Estimation and prediction
+  prediction_train <- predict(get(paste0('reg', k, '.1')), newdata = data_train)
+  prediction_test <- predict(get(paste0('reg', k, '.1')), newdata = data_test)
+  
+  # Criteria evaluation
+  rmse_train[k] <- mse_lev(prediction_train, data_train[,"lnwage"] %>% pull)**(1/2)
+  rmse_test[k] <- mse_lev(prediction_test, data_test[,"lnwage"] %>% pull)**(1/2)
+  
+}
+
+eval <- eval
+eval$rmse_train <- rmse_train
+eval$rmse_test <- rmse_test
+
+
 p <- eval %>%
   ggplot(aes(x = `N predictors`)) + 
   geom_line(aes(y = `Training RMSE`, colour = "Training RMSE")) +
