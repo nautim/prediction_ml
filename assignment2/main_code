@@ -1,5 +1,7 @@
 ## adding necessary libraries
 library(data.table)
+library(tidyverse)
+library(lubridate)
 library(stringr)
 library(readr)
 library(skimr)
@@ -9,6 +11,7 @@ library(randomForest)
 library(scales)
 library(ranger)
 library(pdp)
+library(kableExtra)
 
 ## setting seed
 set.seed(1234)
