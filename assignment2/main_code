@@ -10,7 +10,8 @@ library(scales)
 library(ranger)
 library(pdp)
 
-
+## setting seed
+set.seed(1234)
 
 ## uploading data 
 paris <- fread("/Users/nautim/Desktop/Data and Econometrics/Predictions with ML/listings.csv")
