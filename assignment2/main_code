@@ -66,5 +66,31 @@ ggplot(paris_cleaned, aes(x = price)) + geom_bar(width = 2)
 ggplot(paris_cleaned, aes(x = lnprice)) + geom_density()
 ggplot(paris_cleaned, aes(x = lnprice)) + geom_bar(width = 0.2)
 
+## working with numeric variables
+# changing host_acceptance_rate
+paris_cleaned$host_acceptance_rate <- as.numeric(gsub("%", "", paris_cleaned$host_acceptance_rate))
+
+# creating days_since_first and days_since_last review
+paris_cleaned <- paris_cleaned %>%
+  mutate(days_since_first = as.numeric(as.Date(calendar_last_scraped,format="%Y-%m-%d") -
+                                as.Date(first_review, format="%Y-%m-%d")),
+         days_since_last = as.numeric(as.Date(calendar_last_scraped,format="%Y-%m-%d") -
+                                         as.Date(last_review, format="%Y-%m-%d")))
+                                         
+# choosing other quantitative variables and modifying their representation
+quant_variables <- c("host_acceptance_rate", "accommodates", "bathrooms", "beds", "minimum_nights", "availability_60",
+                     "number_of_reviews", "review_scores_rating", "reviews_per_month", "review_scores_location",
+                     "days_since_first", "days_since_last")
+                     
+paris_cleaned <- paris_cleaned %>%
+  mutate_at(vars(quant_variables), funs("n" = as.numeric))
+
+nnames <- paris_cleaned %>%
+  select(ends_with("_n")) %>%
+  names()
+nnames_i <- match(nnames, colnames(paris_cleaned))
+colnames(paris_cleaned)[nnames_i] <- paste0("n_", quant_variables)
+
+
 
 
