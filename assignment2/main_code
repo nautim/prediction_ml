@@ -109,8 +109,7 @@ for (i in paris_cleaned$amenities) {
   }
 }
 
-amenities[408] <- "CD player with lots of CD available"
-amenities[409] <- "classical and opera"
+amenities <- gsub("[()]", "", amenities)
 
 amenities <- tolower(amenities)
 paris_cleaned$amenities <- tolower(paris_cleaned$amenities)
@@ -168,20 +167,29 @@ final_data <- final_data %>%
 final_data <- final_data %>%
   select(-n_host_acceptance_rate)
 
-# reviews_per_month, days_since_first, days_since_last
+# reviews_per_month, days_since_first, days_since_last, n_review_scores_rating, n_review_scores_location
 summary(final_data$n_reviews_per_month)
 ggplot(final_data, aes(x = n_reviews_per_month)) + geom_bar(width = 0.1)
 summary(final_data$n_days_since_first)
 ggplot(final_data, aes(x = n_days_since_first)) + geom_bar(width = 3)
 summary(final_data$n_days_since_last)
 ggplot(final_data, aes(x = n_days_since_last)) + geom_bar(width = 3)
+summary(final_data$n_review_scores_rating)
+ggplot(final_data, aes(x = n_review_scores_rating)) + geom_bar(width = 0.1)
+summary(final_data$n_review_scores_location)
+ggplot(final_data, aes(x = n_review_scores_location)) + geom_bar(width = 0.1)
+
 final_data <- final_data %>%
   mutate(flag_reviews_per_month = factor(ifelse(is.na(n_reviews_per_month), 1, 0)),
          n_reviews_per_month =  ifelse(is.na(n_reviews_per_month), median(n_reviews_per_month, na.rm = T), n_reviews_per_month),
          flag_days_since_first = factor(ifelse(is.na(n_days_since_first), 1, 0)),
          n_days_since_first = ifelse(is.na(n_days_since_first), median(n_days_since_first, na.rm = T), n_days_since_first),
          flag_days_since_last = factor(ifelse(is.na(n_days_since_last), 1, 0)),
-         n_days_since_last = ifelse(is.na(n_days_since_last), median(n_days_since_last, na.rm = T), n_days_since_last))
+         n_days_since_last = ifelse(is.na(n_days_since_last), median(n_days_since_last, na.rm = T), n_days_since_last), 
+        flag_review_rating = factor(ifelse(is.na(n_review_scores_rating), 1, 0)),
+         n_review_scores_rating =  ifelse(is.na(n_review_scores_rating), median(n_review_scores_rating, na.rm = T), n_review_scores_rating),
+         flag_review_location = factor(ifelse(is.na(n_review_scores_location), 1, 0)),
+         n_review_scores_location = ifelse(is.na(n_review_scores_location), median(n_review_scores_location, na.rm = T), n_review_scores_location))
 
 # checking whether some NAs left 
 to_filter <- sapply(final_data, function(x) sum(is.na(x)))
