@@ -109,8 +109,12 @@ for (i in paris_cleaned$amenities) {
   }
 }
 
+amenities[408] <- "CD player with lots of CD available"
+amenities[409] <- "classical and opera"
+
 amenities <- tolower(amenities)
 paris_cleaned$amenities <- tolower(paris_cleaned$amenities)
+
 
 to_dummies <- paris_cleaned %>% select(host_response_rate, amenities)
 
@@ -119,9 +123,6 @@ n_amenities <- c()
 for (i in amenities) {
   n_amenities <- append(n_amenities, sum(str_detect(to_dummies$amenities, i)))
   }
-
-amenities[425] <- "CD player with lots of CD available"
-amenities[426] <- "classical and opera"
 
 # showing all amenities and their number of mentions
 dt <- data.table(amenities, n_amenities)
@@ -216,7 +217,8 @@ final_data <- final_data %>%
          ln_review_location = ifelse(n_review_scores_location > 0, log(n_review_scores_location), 0),
          ln_review_location2 = ln_review_location^2)
 
-
+## describing the data
+skimr::skim(final_data)
 
 
 
