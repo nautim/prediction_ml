@@ -24,3 +24,15 @@ paris_cleaned <- paris %>%
                          bedrooms %in% c(1, 2, 3)) # have 1 to 3 bedrooms (small & midsize appartement)
 
 ggplot(paris_cleaned, aes(x = bedrooms)) + geom_bar()
+
+## looking at the number of unique values in each of the variable
+unique <- c()
+for (i in colnames(paris_cleaned)) {
+  n <- NROW(unique(paris_cleaned[[i]]))
+  unique <- append(unique, n)
+}
+
+unique_variables_n <- tibble(colnames(paris_cleaned), unique)
+unique_variables_n %>%
+  arrange(desc(unique))
+
