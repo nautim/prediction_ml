@@ -298,7 +298,47 @@ final_data <- final_data %>%
 skimr::skim(final_data)
 Hmisc::describe(final_data)
 
+### ANALYSIS
 
+## preparing models
+# creatind datasets
+train_indices <- as.integer(createDataPartition(final_data$lnprice, p = 0.7, list = FALSE))
+data_train <- final_data[train_indices, ]
+data_holdout <- final_data[-train_indices, ]
+
+dim(data_train)
+dim(data_holdout)
+
+# basic variables, with neighbourhood
+basic_vars <- c("n_accommodates", "f_beds", "n_bathrooms", "b_superhost", "n_minimum_nights", "n_availability_60",
+  "f_neighbourhood_clean")
+
+# largely imputed variables
+reviews <- c("n_review_scores_rating", "flag_review_rating" ,"n_review_scores_location", "flag_review_location",
+             "n_reviews_per_month", "flag_reviews_per_month" ,"n_days_since_first", "flag_days_since_first",
+             "n_days_since_last", "flag_days_since_last" )
+
+# dummy variables
+amenities <-  grep("^b_.*", names(final_data), value = TRUE)
+amenities <- amenities[-1] # because superhost is already used
+amenities <- amenities[1:9] # dummies related to amenities
+
+#interactions and squares for the LASSO
+# squares
+squares <- grep("2$", names(final_data), value = TRUE)
+
+# in general
+X1  <- c("n_accommodates*n_bathrooms",  "n_accommodates*n_availability_60",  "n_review_scores_rating*b_superhost",
+         "b_netflix*b_superhost", "b_freepark*n_accommodates", "b_bedlines*n_accommodates")
+# with neighbourhoods
+X2  <- c("f_beds*f_neighbourhood_clean", "n_bathrooms*f_neighbourhood_clean",
+         "n_accommodates*f_neighbourhood_clean", "n_minimum_nights*f_neighbourhood_clean",
+         "b_superhost*f_neighbourhood_clean")
+
+predictors_1 <- c(basic_vars)
+predictors_2 <- c(basic_vars, reviews)
+predictors_3 <- c(basic_vars, reviews, amenities)
+predictors_E <- c(basic_vars, reviews, amenities, squares, X1, X2)
 
 
 
