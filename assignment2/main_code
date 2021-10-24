@@ -93,4 +93,40 @@ colnames(paris_cleaned)[nnames_i] <- paste0("n_", quant_variables)
 
 
 
+# working with amenities
+paris_cleaned$amenities <- gsub("\"", "", paris_cleaned$amenities)
+paris_cleaned$amenities <- gsub("\\[|\\]", "", paris_cleaned$amenities)
+paris_cleaned$amenities <- gsub("\\[|\\]", "", paris_cleaned$amenities)
+
+# list of unique amenities
+amenities <- c()
+for (i in paris_cleaned$amenities) {
+  splitted <- str_split_fixed(i, ",", n = Inf)
+  for (amenity in splitted) {
+    if (trimws(amenity) %in% amenities) {
+      next
+    } else {amenities <- append(amenities, trimws(amenity))}
+  }
+}
+
+amenities <- tolower(amenities)
+paris_cleaned$amenities <- tolower(paris_cleaned$amenities)
+
+to_dummies <- paris_cleaned %>% select(host_response_rate, amenities)
+
+# calculating the number of each amenity
+n_amenities <- c()
+for (i in amenities) {
+  n_amenities <- append(n_amenities, sum(str_detect(to_dummies$amenities, i)))
+  }
+
+amenities[425] <- "CD player with lots of CD available"
+amenities[426] <- "classical and opera"
+
+# showing all amenities and their number of mentions
+dt <- data.table(amenities, n_amenities)
+dt <- dt %>%
+  filter(n_amenities >= 1) %>%
+  arrange(desc(n_amenities))
+head(dt, 15)
 
