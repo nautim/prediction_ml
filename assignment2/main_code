@@ -168,7 +168,6 @@ final_data <- final_data %>%
   select(-n_host_acceptance_rate)
 
 # reviews_per_month, days_since_first, days_since_last
-
 summary(final_data$n_reviews_per_month)
 ggplot(final_data, aes(x = n_reviews_per_month)) + geom_bar(width = 0.1)
 summary(final_data$n_days_since_first)
@@ -187,8 +186,23 @@ final_data <- final_data %>%
 to_filter <- sapply(final_data, function(x) sum(is.na(x)))
 to_filter[to_filter > 0]
 
+## adding some factors/binaries from quant data
+summary(final_data$n_bathrooms)
+ggplot(final_data, aes(x = n_bathrooms)) + geom_bar() # makes sense to make <=1 and >1
+summary(final_data$n_accommodates)
+ggplot(final_data, aes(x = n_accommodates)) + geom_bar() # I think factor is not necessary here
+summary(final_data$n_beds)
+ggplot(final_data, aes(x = n_beds)) + geom_bar() # makes sense to make <=1, 2, 3, >=4
+summary(final_data$n_minimum_nights)
+ggplot(final_data, aes(x = n_minimum_nights)) + geom_bar(width = 10) # makes sense to make <=5, >=5 (5 is a median)
+summary(final_data$n_availability_60)
+ggplot(final_data, aes(x = n_availability_60)) + geom_bar(width = 2) # makes sense to make 0, >0
 
-
+final_data <- final_data %>%
+  mutate(b_bathrooms = factor(ifelse(n_bathrooms <= 1, 1, 0)),
+         f_beds = factor(ifelse(n_beds <= 1, 1, ifelse(n_beds <= 2, 2, ifelse(n_beds <= 3, 3, 4)))),
+         b_minimum_nights = factor(ifelse(n_minimum_nights <= 5, 1, 0)),
+         b_availability_60 = factor(ifelse(n_availability_60 == 0, 0, 1)))
 
 
 
