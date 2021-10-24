@@ -60,3 +60,11 @@ paris_cleaned$price <- gsub(",", "", paris_cleaned$price)
 paris_cleaned$price <- as.numeric(paris_cleaned$price)
 paris_cleaned$lnprice <- log(paris_cleaned$price)
 
+## looking at the distributions of prices
+ggplot(paris_cleaned, aes(x = price)) + geom_density()
+ggplot(paris_cleaned, aes(x = price)) + geom_bar(width = 2)
+ggplot(paris_cleaned, aes(x = lnprice)) + geom_density()
+ggplot(paris_cleaned, aes(x = lnprice)) + geom_bar(width = 0.2)
+
+
+
