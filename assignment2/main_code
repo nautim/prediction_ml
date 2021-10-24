@@ -35,4 +35,14 @@ for (i in colnames(paris_cleaned)) {
 unique_variables_n <- tibble(colnames(paris_cleaned), unique)
 unique_variables_n %>%
   arrange(desc(unique))
+ 
+## deleting pointless variables 
+paris_cleaned <- paris_cleaned %>%
+  select(-c("id", "listing_url", "picture_url", "description", "name", "host_url", "host_id", "host_url", "host_thumbnail_url", "host_picture_url",
+  "neighborhood_overview", "host_about", "license", "scrape_id", "neighbourhood_group_cleansed", "calendar_updated", "last_scraped", "host_location", 
+  "host_name", "host_since", "host_neighbourhood", "host_verifications", "neighbourhood"), 
+         -contains("calculated_host_listings"),
+         -contains("listings_count"))
+
+
 
