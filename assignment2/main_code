@@ -92,7 +92,7 @@ nnames_i <- match(nnames, colnames(paris_cleaned))
 colnames(paris_cleaned)[nnames_i] <- paste0("n_", quant_variables)
 
 
-
+## working with dummy/factor variables
 # working with amenities
 paris_cleaned$amenities <- gsub("\"", "", paris_cleaned$amenities)
 paris_cleaned$amenities <- gsub("\\[|\\]", "", paris_cleaned$amenities)
@@ -129,4 +129,23 @@ dt <- dt %>%
   filter(n_amenities >= 1) %>%
   arrange(desc(n_amenities))
 head(dt, 15)
+
+# adding relevant binaries
+paris_cleaned <- paris_cleaned %>%
+  mutate(b_wifi = factor(ifelse(str_detect(paris_cleaned$amenities, "wifi"), 1, 0)),
+         b_tv = factor(ifelse(str_detect(paris_cleaned$amenities, "tv"), 1, 0)),
+         b_coffee = factor(ifelse(str_detect(paris_cleaned$amenities, "coffee"), 1, 0)),
+         b_netflix = factor(ifelse(str_detect(paris_cleaned$amenities, "netflix"), 1, 0)),
+         b_breakfast = factor(ifelse(str_detect(paris_cleaned$amenities, "breakfast"), 1, 0)),
+         b_freepark = factor(ifelse(str_detect(paris_cleaned$amenities, "free parking"), 1, 0)),
+         b_cleanprod = factor(ifelse(str_detect(paris_cleaned$amenities, "cleaning products"), 1, 0)),
+         b_bedlinens = factor(ifelse(str_detect(paris_cleaned$amenities, "bed linens"), 1, 0)),
+         b_workspace = factor(ifelse(str_detect(paris_cleaned$amenities, "dedicated workspace"), 1, 0)))
+         
+paris_cleaned <- paris_cleaned %>%
+  mutate(f_neighbourhood_clean = factor(paris_cleaned$neighbourhood_cleansed),
+         b_superhost = factor(ifelse(paris_cleaned$host_is_superhost == 't', 1, 0)))
+         
+
+
 
