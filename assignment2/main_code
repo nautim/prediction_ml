@@ -44,5 +44,13 @@ paris_cleaned <- paris_cleaned %>%
          -contains("calculated_host_listings"),
          -contains("listings_count"))
 
+## improving bathroom variable
+unique(paris_cleaned$bathrooms_text)
 
+paris_cleaned <- paris_cleaned %>%
+  mutate(bathrooms_text = gsub("Half-bath|half-bath", 0.5, bathrooms_text),
+         bathrooms = parse_number(bathrooms_text)) %>%
+  select(-bathrooms_text)
+
+unique(paris_cleaned$bathrooms)
 
