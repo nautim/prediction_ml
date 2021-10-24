@@ -204,7 +204,17 @@ final_data <- final_data %>%
          b_minimum_nights = factor(ifelse(n_minimum_nights <= 5, 1, 0)),
          b_availability_60 = factor(ifelse(n_availability_60 == 0, 0, 1)))
 
-
+## adding interesting variables for future regressions
+final_data <- final_data %>%
+  mutate(ln_minimum_nights = ifelse(n_minimum_nights > 0, log(n_minimum_nights), 0),
+         ln_days_since_first = ifelse(n_days_since_first > 0, log(n_days_since_first), 0),
+         ln_days_since_first2 = ln_days_since_first^2,
+         ln_days_since_last = ifelse(n_days_since_last > 0, log(n_days_since_last), 0),
+         ln_days_since_last2 = ln_days_since_last^2,
+         ln_review_rating = ifelse(n_review_scores_rating > 0, log(n_review_scores_rating), 0),
+         ln_review_rating2 = ln_review_rating^2,
+         ln_review_location = ifelse(n_review_scores_location > 0, log(n_review_scores_location), 0),
+         ln_review_location2 = ln_review_location^2)
 
 
 
