@@ -9,3 +9,11 @@ library(randomForest)
 library(scales)
 library(ranger)
 library(pdp)
+
+
+
+## uploading data 
+paris <- fread("/Users/nautim/Desktop/Data and Econometrics/Predictions with ML/listings.csv")
+
+
+
