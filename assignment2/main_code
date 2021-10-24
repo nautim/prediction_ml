@@ -54,3 +54,9 @@ paris_cleaned <- paris_cleaned %>%
 
 unique(paris_cleaned$bathrooms)
 
+## improving price variable, creating ln price
+paris_cleaned$price <- gsub("\\$", "", paris_cleaned$price)
+paris_cleaned$price <- gsub(",", "", paris_cleaned$price)
+paris_cleaned$price <- as.numeric(paris_cleaned$price)
+paris_cleaned$lnprice <- log(paris_cleaned$price)
+
