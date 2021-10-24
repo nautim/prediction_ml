@@ -16,5 +16,11 @@ set.seed(1234)
 ## uploading data 
 paris <- fread("/Users/nautim/Desktop/Data and Econometrics/Predictions with ML/listings.csv")
 
+## filtering data according to the task
+paris_cleaned <- paris %>%
+  filter(accommodates >= 2 & accommodates <= 6 & # accomodates between 2 and 6 people
+          room_type == "Entire home/apt" & 
+           !str_detect(paris_cleaned$property_type, c("condo|house|House|cottage|room|Room|Island|Barn|bed|Boat|Cave|suite|villa|bungalow|reside")) &
+                         bedrooms %in% c(1, 2, 3)) # have 1 to 3 bedrooms (small & midsize appartement)
 
-
+ggplot(paris_cleaned, aes(x = bedrooms)) + geom_bar()
