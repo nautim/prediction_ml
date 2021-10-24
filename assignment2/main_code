@@ -146,6 +146,7 @@ paris_cleaned <- paris_cleaned %>%
   mutate(f_neighbourhood_clean = factor(paris_cleaned$neighbourhood_cleansed),
          b_superhost = factor(ifelse(paris_cleaned$host_is_superhost == 't', 1, 0)))
          
-
-
+## finalising the working dataset
+final_data <- paris_cleaned %>%
+  select(price, lnprice, starts_with(c("n_", "b_", "f_")))
 
