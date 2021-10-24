@@ -416,9 +416,91 @@ results <- resamples(
 )
 summary(results)
 
+## using model 3 as a benchmark (the best performance)
+rf_tuning_model3 <- rf_model_3$results %>%
+  dplyr::select(mtry, min.node.size, RMSE) %>%
+  dplyr::rename(nodes = min.node.size) %>%
+  spread(key = mtry, value = RMSE)
+rf_tuning_model3
+
+result_1 <- matrix(c(
+  rf_model_1$finalModel$mtry,
+  rf_model_2$finalModel$mtry,
+  rf_model_3$finalModel$mtry,
+#  rf_model_3auto$finalModel$mtry,
+  rf_model_1$finalModel$min.node.size,
+  rf_model_2$finalModel$min.node.size,
+  rf_model_3$finalModel$min.node.size
+#  rf_model_3auto$finalModel$min.node.size
+  
+),
+nrow=3, ncol=2,
+dimnames = list(c("Model 1", "Model 2","Model 3"),
+                c("Min vars","Min nodes"))
+)
+
+kable(x = result_1, format = "html", digits = 3)
+
+group.importance <- function(rf.obj, groups) {
+  var.imp <- as.matrix(sapply(groups, function(g) {
+    sum(importance(rf.obj)[g], na.rm = TRUE)
+  }))
+  colnames(var.imp) <- "MeanDecreaseGini"
+  return(var.imp)
+}
 
 
+rf_model_3_var_imp <- ranger::importance(rf_model_3$finalModel)/1000
+rf_model_3_var_imp_df <-
+  data.frame(varname = names(rf_model_3_var_imp),imp = rf_model_3_var_imp) %>%
+  mutate(varname = gsub("f_neighbourhood_cleansed", "Borough:", varname) ) %>%
+  mutate(varname = gsub("f_room_type", "Room type:", varname) ) %>%
+  arrange(desc(imp)) %>%
+  mutate(imp_percentage = imp/sum(imp))
 
+
+# visuals for variables' importance 
+cutoff = 0.15
+ggplot(rf_model_3_var_imp_df[rf_model_3_var_imp_df$imp>cutoff,],
+                                  aes(x=reorder(varname, imp), y=imp_percentage)) +
+  geom_point(color=color[1], size=1.5) +
+  geom_segment(aes(x=varname,xend=varname,y=0,yend=imp_percentage), color=color[1], size=1) +
+  ylab("Importance (Percent)") +
+  xlab("Variable Name") +
+  coord_flip() +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  theme_bg() +
+  theme(axis.text.x = element_text(size=6), axis.text.y = element_text(size=6),
+        axis.title.x = element_text(size=6), axis.title.y = element_text(size=6))
+
+varnames <- rf_model_3$finalModel$xNames
+
+# visuals for factors' importance
+f_neighbourhood_clean_varnames <- grep("f_neighbourhood_clean",varnames, value = TRUE)
+f_bed_clean_varnames <- grep("f_bed",varnames, value = TRUE)
+
+groups <- list(f_neighbourhood_clean = f_neighbourhood_clean_varnames,
+               f_bed_clean = f_bed_clean_varnames,
+               n_bathrooms = "n_bathrooms",
+               b_superhost = "b_superhost1",
+               n_accommodates = "n_accommodates")
+
+rf_model_3_var_imp_grouped <- group.importance(rf_model_2$finalModel, groups)
+rf_model_3_var_imp_grouped_df <- data.frame(varname = rownames(rf_model_3_var_imp_grouped),
+                                            imp = rf_model_3_var_imp_grouped[,1])  %>%
+  mutate(imp_percentage = imp/sum(imp))
+
+
+ggplot(rf_model_3_var_imp_grouped_df, aes(x=reorder(varname, imp), y=imp_percentage)) +
+  geom_point(color=color[1], size=1) +
+  geom_segment(aes(x=varname,xend=varname,y=0,yend=imp_percentage), color=color[1], size=0.7) +
+  ylab("Importance (Percent)") +   xlab("Variable Name") +
+  coord_flip() +
+  # expand=c(0,0),
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  theme_bg() +
+  theme(axis.text.x = element_text(size=4), axis.text.y = element_text(size=4),
+        axis.title.x = element_text(size=4), axis.title.y = element_text(size=4))
 
 
 
