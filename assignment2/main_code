@@ -227,6 +227,7 @@ final_data <- final_data %>%
 
 ## describing the data
 skimr::skim(final_data)
+Hmisc::describe(final_data)
 
 
 
