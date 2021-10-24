@@ -340,6 +340,81 @@ predictors_2 <- c(basic_vars, reviews)
 predictors_3 <- c(basic_vars, reviews, amenities)
 predictors_E <- c(basic_vars, reviews, amenities, squares, X1, X2)
 
+## building random forest
+# do 5-fold CV
+train_control <- trainControl(method = "cv",
+                              number = 5,
+                              verboseIter = FALSE)
+                              
+# set tuning for all models
+tune_grid <- expand.grid(
+  .mtry = c(8, 10, 12),
+  .splitrule = "variance",
+  .min.node.size = c(5, 10, 15)
+)
+
+set.seed(1234)
+system.time({
+  rf_model_1 <- train(
+    formula(paste0("lnprice ~", paste0(predictors_1, collapse = " + "))),
+    data = data_train,
+    method = "ranger",
+    trControl = train_control,
+    tuneGrid = tune_grid,
+    importance = "impurity"
+  )
+})
+rf_model_1
+
+set.seed(1234)
+system.time({
+  rf_model_2 <- train(
+    formula(paste0("lnprice ~", paste0(predictors_2, collapse = " + "))),
+    data = data_train,
+    method = "ranger",
+    trControl = train_control,
+    tuneGrid = tune_grid,
+    importance = "impurity"
+  )
+})
+rf_model_2
+
+set.seed(1234)
+system.time({
+  rf_model_3 <- train(
+    formula(paste0("lnprice ~", paste0(predictors_3, collapse = " + "))),
+    data = data_train,
+    method = "ranger",
+    trControl = train_control,
+    tuneGrid = tune_grid,
+    importance = "impurity"
+  )
+})
+rf_model_3
+
+# auto tuning for the third model
+set.seed(1234)
+system.time({
+   rf_model_3auto <- train(
+     formula(paste0("lnprice ~", paste0(predictors_3, collapse = " + "))),
+     data = data_train,
+     method = "ranger",
+     trControl = train_control,
+     importance = "impurity"
+   )
+ })
+summary(rf_model_3auto)
+
+
+results <- resamples(
+  list(
+    model_1  = rf_model_1,
+    model_2  = rf_model_2,
+    model_3  = rf_model_3,
+    model_3b = rf_model_3auto
+  )
+)
+summary(results)
 
 
 
