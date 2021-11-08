@@ -662,3 +662,52 @@ summary(data_filtered$imputed)
 ## set of fe variables
 fe <- c("year", "ind2_cat", "imputed")
 
+# adding polynomials and interactions
+## sq is needed
+ggplot(data = data_filtered, aes(x = ln_amort, y = as.numeric(fast_growth))) +
+  geom_point(size = 2,  shape = 20, stroke=2, fill = "blue", color = "blue") +
+  geom_smooth(method = "lm", formula = y ~ poly(x,2), color = color[4], se = F, size = 1)+
+  geom_smooth(method = "loess", se = F, colour = color[5], size = 1.5, span = 0.9) +
+  labs(x = "ln_amort", y = "fast_growth") +
+  theme_bg()
+
+## sq is needed
+ggplot(data = data_filtered, aes(x = ln_curr_assets, y = as.numeric(fast_growth))) +
+  geom_point(size = 2,  shape = 20, stroke=2, fill = "blue", color = "blue") +
+  geom_smooth(method = "lm", formula = y ~ x, color = color[4], se = F, size = 1)+
+  geom_smooth(method = "loess", se = F, colour = color[5], size = 1.5, span = 0.9) +
+  labs(x = "ln_curr_assets", y = "fast_growth") +
+  theme_bg()
+
+## it is better to include all squares, LASSO will decide
+
+data_filtered <- data_filtered %>%
+  mutate(ln_amort2 = ln_amort^2,
+         ln_curr_assets2 = ln_curr_assets^2,
+         ln_curr_liab2 = ln_curr_liab^2,
+         ln_extra_exp2 = ln_extra_exp^2,
+         ln_extra_inc2 = ln_extra_inc^2,
+         ln_fixed_assets2 = ln_fixed_assets^2,
+         inc_bef_tax_st2 = inc_bef_tax_st^2,
+         ln_intang_assets2 = ln_intang_assets^2,
+         ln_inventories2 = ln_inventories^2,
+         ln_liq_assets2 = ln_liq_assets^2,
+         ln_material_exp2 = ln_material_exp^2,
+         ln_personnel_exp2 = ln_personnel_exp^2,
+         profit_loss_year_st2 = profit_loss_year_st^2,
+         ln_tang_assets2 = ln_tang_assets^2,
+         ln_subscribed_cap2 = ln_subscribed_cap^2)
+
+polynomials <- c("ln_amort2", "ln_curr_assets2", "ln_curr_liab2", "ln_extra_exp2",
+                 "ln_extra_inc2", "ln_fixed_assets2", 
+                 "inc_bef_tax_st2", "ln_intang_assets2", "ln_inventories2",
+                 "ln_liq_assets2", "ln_material_exp2", "ln_personnel_exp2",
+                 "profit_loss_year_st2", "ln_tang_assets2", "ln_subscribed_cap2")
+
+interactions1 <- c("urban_m*ln_extra_exp", "urban_m*ln_personnel_exp", "urban_m*inc_bef_tax_st", "urban_m*ln_fixed_assets2",
+                  "origin*ln_extra_exp", "origin*ln_personnel_exp", "origin*inc_bef_tax_st", "origin*ln_fixed_assets2",
+                  "region_m*ln_extra_exp", "region_m*ln_personnel_exp", "region_m*inc_bef_tax_st", "region_m*ln_fixed_assets2",
+                  "gender*ln_extra_exp", "gender*ln_personnel_exp", "gender*inc_bef_tax_st", "gender*ln_fixed_assets2")
+
+interactions2 <- c("foreign*ln_extra_exp", "foreign*ln_personnel_exp", "foreign*inc_bef_tax_st", "foreign*ln_fixed_assets2",
+                   "female*ln_extra_exp", "female*ln_personnel_exp", "female*inc_bef_tax_st", "female*ln_fixed_assets2")
