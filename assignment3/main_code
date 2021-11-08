@@ -289,4 +289,376 @@ data_filtered %>%
   dplyr::summarize(n_firms = n())
 
 
+####### 
+####### feature engineering 
+####### 
+
+## amort
+data_filtered %>%
+  ggplot(aes(x = amort)) + geom_density()
+summary(data_filtered$amort) 
+# 199 NAs - not so many, so can impute with a median; variables under 0 can be changed to 0 with flagging it
+
+data_filtered <- data_filtered %>%
+  mutate(amort =  ifelse(is.na(amort), median(amort, na.rm = T), amort),
+         amort_flag = ifelse(amort < 0, 1, 0),
+         amort = ifelse(amort < 0, 0, amort),
+         ln_amort = log(amort + 1))
+data_filtered %>%
+  ggplot(aes(x = ln_amort)) + geom_density()
+
+summary(data_filtered$flag_error)
+
+# flagging if assets < 0
+
+data_filtered <- data_filtered %>%
+  mutate(flag_asset_problem =  ifelse(intang_assets < 0 | curr_assets < 0 | fixed_assets < 0 | liq_assets < 0 | tang_assets < 0, 1, 0))
+
+## curr_assets
+data_filtered %>%
+  ggplot(aes(x = curr_assets)) + geom_density()
+summary(data_filtered$curr_assets) 
+# 19 NAs - not so many, so again can impute with a median; variables under 0 can be changed to 0 with flagging it
+
+data_filtered <- data_filtered %>%
+  mutate(curr_assets =  ifelse(is.na(curr_assets), median(curr_assets, na.rm = T), curr_assets),
+         curr_assets = ifelse(curr_assets < 0, 0, curr_assets),
+         ln_curr_assets = log(curr_assets + 1))
+data_filtered %>%
+  ggplot(aes(x = ln_curr_assets)) + geom_density()
+
+## fixed_assets
+data_filtered %>%
+  ggplot(aes(x = fixed_assets)) + geom_density()
+summary(data_filtered$fixed_assets) 
+# 19 NAs - not so many, so again can impute with a median; variables under 0 can be changed to 0 with flagging it
+
+data_filtered <- data_filtered %>%
+  mutate(fixed_assets =  ifelse(is.na(fixed_assets), median(fixed_assets, na.rm = T), fixed_assets),
+         fixed_assets = ifelse(fixed_assets < 0, 0, fixed_assets),
+         ln_fixed_assets = log(fixed_assets + 1))
+data_filtered %>%
+  ggplot(aes(x = ln_fixed_assets)) + geom_density()
+
+## intang_assets
+data_filtered %>%
+  ggplot(aes(x = intang_assets)) + geom_density()
+summary(data_filtered$intang_assets) 
+# 19 NAs - not so many, so again can impute with a median; variables under 0 can be changed to 0 with flagging it
+
+data_filtered <- data_filtered %>%
+  mutate(intang_assets =  ifelse(is.na(intang_assets), median(intang_assets, na.rm = T), intang_assets),
+         intang_assets = ifelse(intang_assets < 0, 0, intang_assets),
+         ln_intang_assets = log(intang_assets + 1))
+data_filtered %>%
+  ggplot(aes(x = ln_intang_assets)) + geom_density()
+
+## liq_assets
+data_filtered %>%
+  ggplot(aes(x = liq_assets)) + geom_density()
+summary(data_filtered$liq_assets) 
+# 19 NAs - not so many, so again can impute with a median; variables under 0 can be changed to 0 with flagging it
+
+data_filtered <- data_filtered %>%
+  mutate(liq_assets =  ifelse(is.na(liq_assets), median(liq_assets, na.rm = T), liq_assets),
+         liq_assets = ifelse(liq_assets < 0, 0, liq_assets),
+         ln_liq_assets = log(liq_assets + 1))
+data_filtered %>%
+  ggplot(aes(x = ln_liq_assets)) + geom_density()
+
+## tang_assets
+data_filtered %>%
+  ggplot(aes(x = tang_assets)) + geom_density()
+summary(data_filtered$tang_assets) 
+# 19 NAs - not so many, so again can impute with a median; variables under 0 can be changed to 0 with flagging it
+
+data_filtered <- data_filtered %>%
+  mutate(tang_assets =  ifelse(is.na(tang_assets), median(tang_assets, na.rm = T), tang_assets),
+         tang_assets = ifelse(tang_assets < 0, 0, tang_assets),
+         ln_tang_assets = log(tang_assets + 1))
+data_filtered %>%
+  ggplot(aes(x = ln_tang_assets)) + geom_density()
+  
+# flagging if other non-negative variables < 0
+
+data_filtered <- data_filtered %>%
+  mutate(flag_error =  ifelse(curr_liab < 0 | extra_exp < 0 | extra_inc < 0 | inventories < 0 | material_exp < 0 | personnel_exp < 0 | subscribed_cap < 0, 1, 0))
+
+# curr_liab
+data_filtered %>%
+  ggplot(aes(x = curr_liab)) + geom_density()
+summary(data_filtered$curr_liab) 
+# 19 NAs - not so many, so again can impute with a median; variables under 0 can be changed to 0 with flagging it
+
+data_filtered <- data_filtered %>%
+  mutate(curr_liab =  ifelse(is.na(curr_liab), median(curr_liab, na.rm = T), curr_liab),
+         curr_liab = ifelse(curr_liab < 0, 0, curr_liab),
+         ln_curr_liab = log(curr_liab + 1))
+data_filtered %>%
+  ggplot(aes(x = ln_curr_liab)) + geom_density()
+
+## extra_exp
+data_filtered %>%
+  ggplot(aes(x = extra_exp)) + geom_density()
+summary(data_filtered$extra_exp) 
+# 3 NAs - not so many, so again can impute with a median; variables under 0 can be changed to 0 with flagging it
+
+data_filtered <- data_filtered %>%
+  mutate(extra_exp =  ifelse(is.na(extra_exp), median(extra_exp, na.rm = T), extra_exp),
+         extra_exp = ifelse(extra_exp < 0, 0, extra_exp),
+         ln_extra_exp = log(extra_exp + 1))
+data_filtered %>%
+  ggplot(aes(x = ln_extra_exp)) + geom_density()
+
+## extra_inc
+data_filtered %>%
+  ggplot(aes(x = extra_inc)) + geom_density()
+summary(data_filtered$extra_inc) 
+# 3 NAs - not so many, so again can impute with a median; variables under 0 can be changed to 0 with flagging it
+
+data_filtered <- data_filtered %>%
+  mutate(extra_inc =  ifelse(is.na(extra_inc), median(extra_inc, na.rm = T), extra_inc),
+         extra_inc = ifelse(extra_inc < 0, 0, extra_inc),
+         ln_extra_inc = log(extra_inc + 1))
+data_filtered %>%
+  ggplot(aes(x = ln_extra_inc)) + geom_density()
+
+## inc_bef_tax
+data_filtered %>%
+  ggplot(aes(x = inc_bef_tax)) + geom_density()
+summary(data_filtered$inc_bef_tax) 
+
+# in this case, I decided to standartise and then winsorized it
+data_filtered <- data_filtered %>%
+  mutate(inc_bef_tax_st = (inc_bef_tax - mean(inc_bef_tax))/sd(inc_bef_tax))
+
+data_filtered$inc_bef_tax_st <- Winsorize(data_filtered$inc_bef_tax_st, minval = NULL, maxval = NULL, probs = c(0.05, 0.95),
+                  na.rm = FALSE, type = 7)
+
+data_filtered %>%
+  ggplot(aes(x = inc_bef_tax_st)) + geom_density()
+
+
+## inventories
+data_filtered %>%
+  ggplot(aes(x = inventories)) + geom_density()
+summary(data_filtered$inventories) 
+# 19 NAs - not so many, so again can impute with a median; variables under 0 can be changed to 0 with flagging it
+
+data_filtered <- data_filtered %>%
+  mutate(inventories =  ifelse(is.na(inventories), median(inventories, na.rm = T), inventories),
+         inventories = ifelse(inventories < 0, 0, inventories),
+         ln_inventories = log(inventories + 1))
+data_filtered %>%
+  ggplot(aes(x = ln_inventories)) + geom_density()
+
+
+## material_exp
+data_filtered %>%
+  ggplot(aes(x = material_exp)) + geom_density()
+summary(data_filtered$material_exp) 
+# 199 NAs - not so many, so again can impute with a median; variables under 0 can be changed to 0 with flagging it
+
+data_filtered <- data_filtered %>%
+  mutate(material_exp =  ifelse(is.na(material_exp), median(material_exp, na.rm = T), material_exp),
+         material_exp = ifelse(material_exp < 0, 0, material_exp),
+         ln_material_exp = log(material_exp + 1))
+data_filtered %>%
+  ggplot(aes(x = ln_material_exp)) + geom_density()
+
+## personnel_exp
+data_filtered %>%
+  ggplot(aes(x = personnel_exp)) + geom_density()
+summary(data_filtered$personnel_exp) 
+# 199 NAs - not so many, so again can impute with a median; variables under 0 can be changed to 0 with flagging it
+
+data_filtered <- data_filtered %>%
+  mutate(personnel_exp =  ifelse(is.na(personnel_exp), median(personnel_exp, na.rm = T), personnel_exp),
+         personnel_exp = ifelse(personnel_exp < 0, 0, personnel_exp),
+         ln_personnel_exp = log(personnel_exp + 1))
+data_filtered %>%
+  ggplot(aes(x = ln_personnel_exp)) + geom_density()
+
+## profit_loss_year
+data_filtered %>%
+  ggplot(aes(x = profit_loss_year)) + geom_density()
+summary(data_filtered$profit_loss_year) 
+# 25 NAs - not so many, so again can impute with a median; standartisation and winsorising
+
+data_filtered <- data_filtered %>%
+  mutate(profit_loss_year =  ifelse(is.na(profit_loss_year), median(profit_loss_year, na.rm = T), profit_loss_year),
+         profit_loss_year_st = (profit_loss_year - mean(profit_loss_year))/sd(profit_loss_year))
+
+data_filtered$profit_loss_year_st <- Winsorize(data_filtered$profit_loss_year_st, minval = NULL, maxval = NULL, probs = c(0.05, 0.95),
+                                          na.rm = FALSE, type = 7)
+
+data_filtered %>%
+  ggplot(aes(x = profit_loss_year_st)) + geom_density()
+
+## subscribed_cap
+data_filtered %>%
+  ggplot(aes(x = subscribed_cap)) + geom_density()
+summary(data_filtered$subscribed_cap) 
+# 19 NAs - not so many, so again can impute with a median; variables under 0 can be changed to 0 with flagging it
+
+data_filtered <- data_filtered %>%
+  mutate(subscribed_cap =  ifelse(is.na(subscribed_cap), median(subscribed_cap, na.rm = T), subscribed_cap),
+         subscribed_cap = ifelse(subscribed_cap < 0, 0, subscribed_cap),
+         ln_subscribed_cap = log(subscribed_cap + 1))
+data_filtered %>%
+  ggplot(aes(x = ln_subscribed_cap)) + geom_density()
+
+
+## set of numeric variables
+financial_perform <- c("ln_amort", "amort_flag", "ln_curr_assets", "ln_fixed_assets", "ln_intang_assets", "ln_liq_assets", "ln_tang_assets", "flag_asset_problem", "ln_curr_liab", "ln_extra_exp", "ln_extra_inc", "inc_bef_tax_st", "ln_inventories", "ln_material_exp", "ln_personnel_exp", "profit_loss_year_st", "ln_subscribed_cap", "flag_error")
+
+
+## set of variables related to the people
+
+### ceo_count
+data_filtered %>%
+  ggplot(aes(x = ceo_count)) + geom_bar()
+summary(data_filtered$ceo_count)
+
+# let's unite all categories with 3 and more CEOs together; for NAs, assume it equals to the median (1 CEO) + flag them
+data_filtered <- data_filtered %>%
+  mutate(ceo_count_flag = ifelse(is.na(ceo_count), 1, 0),
+         ceo_count = ifelse(is.na(ceo_count), median(ceo_count, na.rm = T), ceo_count),
+         ceo_count = as.factor(ifelse(ceo_count >= 3, 3, ceo_count)))
+
+data_filtered %>%
+  ggplot(aes(x = ceo_count)) + geom_bar()
+
+### foreign CEO share
+data_filtered %>%
+  ggplot(aes(x = foreign)) + geom_density()
+summary(data_filtered$foreign)
+
+# let's transform NAs to mean (since it is share) and flag them
+data_filtered <- data_filtered %>%
+  mutate(foreign_flag = ifelse(is.na(foreign), 1, 0),
+         foreign = ifelse(is.na(foreign), mean(foreign, na.rm = T), foreign))
+
+
+data_filtered %>%
+  ggplot(aes(x = foreign)) + geom_bar()
+
+### female CEO share
+data_filtered %>%
+  ggplot(aes(x = female)) + geom_density()
+summary(data_filtered$female)
+
+# in the same way, let's transform NAs to mean (since it is share) and flag them
+data_filtered <- data_filtered %>%
+  mutate(female_flag = ifelse(is.na(female), 1, 0),
+         female = ifelse(is.na(female), mean(female, na.rm = T), female))
+
+data_filtered %>%
+  ggplot(aes(x = female)) + geom_bar()
+
+# in the same way, let's transform NAs to median and flag them
+data_filtered <- data_filtered %>%
+  mutate(birth_year_flag = ifelse(is.na(birth_year), 1, 0),
+         birth_year = ifelse(is.na(birth_year), mean(birth_year, na.rm = T), birth_year),
+         birth_year = floor(birth_year),
+         birth_year = as.factor(birth_year))
+
+data_filtered %>%
+  ggplot(aes(x = birth_year)) + geom_bar()
+
+### inoffice_days
+data_filtered %>%
+  ggplot(aes(x = inoffice_days)) + geom_bar()
+table(data_filtered$inoffice_days)
+summary(data_filtered$inoffice_days)
+
+# in the same way, let's transform NAs to median and flag them
+data_filtered <- data_filtered %>%
+  mutate(inoffice_days_flag = ifelse(is.na(inoffice_days), 1, 0),
+         inoffice_days = ifelse(is.na(inoffice_days), mean(inoffice_days, na.rm = T), inoffice_days))
+
+data_filtered %>%
+  ggplot(aes(x = inoffice_days)) + geom_bar()
+
+### gender
+data_filtered %>%
+  ggplot(aes(x = gender)) + geom_bar()
+table(data_filtered$gender)
+summary(data_filtered$gender)
+
+# here, I think NAs can be used as a reference category
+data_filtered$gender <- fct_recode(data_filtered$gender, "zero" = "")
+data_filtered <- data_filtered %>%
+  mutate(gender = as.factor(gender),
+         gender = relevel(gender, ref = "zero")) 
+
+### origin
+data_filtered %>%
+  ggplot(aes(x = origin)) + geom_bar()
+table(data_filtered$origin)
+summary(data_filtered$origin)
+
+# NAs also can be used as a reference category
+data_filtered$origin <- fct_recode(data_filtered$origin, "zero" = "")
+data_filtered <- data_filtered %>%
+  mutate(origin = as.factor(origin),
+         origin = relevel(origin, ref = "zero"))
+
+hr <- c("ceo_count", "ceo_count_flag", "foreign", "female",
+        "inoffice_days", "gender", "origin")
+
+### urban_m
+data_filtered %>%
+  ggplot(aes(x = urban_m)) + geom_bar()
+
+data_filtered <- data_filtered %>%
+  mutate(urban_m = as.factor(urban_m),
+         urban_m = fct_recode(urban_m, "capital" = "1", "other big" = "2", "other" = "3"))
+
+data_filtered %>%
+  ggplot(aes(x = urban_m)) + geom_bar()
+
+### region_m
+data_filtered %>%
+  ggplot(aes(x = region_m)) + geom_bar()
+table(data_filtered$region_m) # let's also use NAs as references
+
+data_filtered <- data_filtered %>%
+  mutate(region_m = factor(region_m, levels = c("Central", "East", "West"))) %>%
+  drop_na(region_m) # delete NAs
+
+data_filtered %>%
+  ggplot(aes(x = region_m)) + geom_bar()
+
+geography <- c("urban_m", "region_m")
+
+### year
+data_filtered %>%
+  ggplot(aes(x = year)) + geom_bar()
+data_filtered$year <- as.factor(data_filtered$year)
+summary(data_filtered$year)
+
+### category
+data_filtered %>%
+  ggplot(aes(x = ind2)) + geom_bar()
+## too many categories, some are too specific and small - need to make them "more common"; 34 NAs can create another category
+data_filtered <- data_filtered %>%
+  mutate(ind2_cat = ind2 %>%
+           ifelse(. > 56, 60, .)  %>%
+           ifelse(. < 26, 20, .) %>%
+           ifelse(. < 55 & . > 35, 40, .) %>%
+           ifelse(. == 31, 30, .) %>%
+           ifelse(is.na(.), 99, .)
+           )
+data_filtered$ind2_cat <- as.factor(data_filtered$ind2_cat)
+table(data_filtered$ind2_cat)
+
+### imputed DV
+data_filtered %>%
+  ggplot(aes(x = imputed)) + geom_bar()
+data_filtered$imputed <- as.factor(data_filtered$imputed)
+summary(data_filtered$imputed)
+
+## set of fe variables
+fe <- c("year", "ind2_cat", "imputed")
 
