@@ -711,3 +711,84 @@ interactions1 <- c("urban_m*ln_extra_exp", "urban_m*ln_personnel_exp", "urban_m*
 
 interactions2 <- c("foreign*ln_extra_exp", "foreign*ln_personnel_exp", "foreign*inc_bef_tax_st", "foreign*ln_fixed_assets2",
                    "female*ln_extra_exp", "female*ln_personnel_exp", "female*inc_bef_tax_st", "female*ln_fixed_assets2")
+                   
+####### 
+####### model building 
+####### 
+
+X1 <- c(financial_perform)
+X2 <- c(financial_perform, hr)
+X3 <- c(financial_perform, hr, geography)
+X4 <- c(financial_perform, hr, geography, fe)
+X5 <- c(financial_perform, hr, geography, fe, polynomials)
+X6 <- c(financial_perform, hr, geography, fe, polynomials, interactions1, interactions2)
+
+# for LASSO
+logitvars <- c(financial_perform, hr, geography, fe, polynomials, interactions1, interactions2)
+  
+# for random forest
+rfvars  <-  c(financial_perform, hr, geography, fe)
+
+# ols - model 1
+ols_modelx1 <- lm(formula(paste0("fast_growth ~ ", paste0(X1, collapse = " + "))),
+                data = data_filtered)
+summary(ols_modelx1)
+
+# logit - model 1
+glm_modelx1 <- glm(formula(paste0("fast_growth_f ~", paste0(X1, collapse = " + "))),
+                   data = data_filtered, family = "binomial")
+summary(glm_modelx1)
+
+# Check model X2
+glm_modelx2 <- glm(formula(paste0("fast_growth_f ~", paste0(X2, collapse = " + "))),
+                 data = data_filtered, family = "binomial")
+summary(glm_modelx2)
+
+#calculate average marginal effects (dy/dx) for logit
+mx2 <- margins(glm_modelx2, vce = "none")
+
+sum_table <- summary(glm_modelx2) %>%
+  coef() %>%
+  as.data.frame() %>%
+  select(Estimate) %>%
+  mutate(factor = row.names(.)) %>%
+  merge(summary(mx2)[,c("factor","AME")])
+  
+kable(x = sum_table, format = "html", digits = 3,
+    col.names = c("Variable", "Coefficient", "dx/dy"),
+    caption = "Average Marginal Effects (dy/dx) for Logit Model")
+    
+ols_modelx3 <- lm(formula(paste0("fast_growth ~", paste0(X3, collapse = " + "))),
+                data = data_filtered)
+summary(ols_modelx3)
+
+glm_modelx3 <- glm(formula(paste0("fast_growth_f ~", paste0(X3, collapse = " + "))),
+                 data = data_filtered, family = "binomial")
+summary(glm_modelx3)
+
+ols_modelx4 <- lm(formula(paste0("fast_growth ~", paste0(X4, collapse = " + "))),
+                data = data_filtered)
+summary(ols_modelx4)
+
+glm_modelx4 <- glm(formula(paste0("fast_growth_f ~", paste0(X4, collapse = " + "))),
+                 data = data_filtered, family = "binomial")
+summary(glm_modelx4)
+
+#calculate average marginal effects (dy/dx) for logit
+# vce="none" makes it run much faster, here we do not need variances
+
+m <- margins(glm_modelx4, vce = "none")
+
+sum_table2 <- summary(glm_modelx4) %>%
+  coef() %>%
+  as.data.frame() %>%
+  select(Estimate, `Std. Error`) %>%
+  mutate(factor = row.names(.)) %>%
+  merge(summary(m)[,c("factor","AME")])
+
+kable(x = sum_table2, format = "html", digits = 3,
+      col.names = c("Variable", "Coefficient", "SE", "dx/dy"),
+      caption = "Average Marginal Effects (dy/dx) for Logit Model")
+      
+
+
