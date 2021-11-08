@@ -209,6 +209,15 @@ data <- fread("/Users/nautim/Desktop/Data and Econometrics/Predictions with ML/c
 
 ## 287829 observations, 48 variables
 
+# preliminary checks of NAs
+to_filter <- sapply(data, function(x) sum(is.na(x)))
+to_filter[to_filter > 0]
+
+## variables with more than 80% of NAs: COGS, finished_prod, net_dom_sales, net_exp_sales, wages
+## they can be deleted
+
+data <- data %>%
+  select(-c(COGS, finished_prod, net_dom_sales, net_exp_sales, wages))
 
 
 
