@@ -1,5 +1,4 @@
 # uploading some background functions and settings
-
 color <- c("#3a5e8cFF", "#10a53dFF", "#541352FF", "#ffcf20FF", "#2f9aa0FF")
 
 color.outline = "#FFFFFF"
@@ -193,4 +192,23 @@ createRocPlotWithOptimal <- function(r, best_coords, file_name,  myheight_small 
 
   roc_plot
 }
+
+# adding libraries and uploading data
+library(data.table)
+library(DescTools)
+library(margins)
+library(caret)
+library(tidyverse)
+library(knitr)
+library(pROC)
+library(viridis)
+library(rpart)
+library(rpart.plot)
+
+data <- fread("/Users/nautim/Desktop/Data and Econometrics/Predictions with ML/cs_bisnode_panel.csv")
+
+## 287829 observations, 48 variables
+
+
+
 
