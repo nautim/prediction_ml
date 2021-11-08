@@ -219,5 +219,17 @@ to_filter[to_filter > 0]
 data <- data %>%
   select(-c(COGS, finished_prod, net_dom_sales, net_exp_sales, wages))
 
+####### 
+####### sample design
+####### 
 
+data_filtered <- data %>%
+  filter(year %in% c(2010:2015))
+NROW(unique(data_filtered$comp_id))
+## 167606 observations now, 39375 unique companies
+
+data_filtered <- data_filtered %>%
+  filter(sales >= 1000 & sales <= 50000000)
+NROW(unique(data_filtered$comp_id))
+## 129491 observations now, 33703 unique companies
 
