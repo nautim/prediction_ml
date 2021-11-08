@@ -233,3 +233,60 @@ data_filtered <- data_filtered %>%
 NROW(unique(data_filtered$comp_id))
 ## 129491 observations now, 33703 unique companies
 
+####### 
+####### label engineering 
+####### 
+
+data_filtered_wide <- data_filtered %>% 
+  pivot_wider(id_cols = c(comp_id, year), names_from = year, values_from = sales) %>%
+  mutate(total_change = `2014` - `2012`,
+         perc_change = total_change/`2012`*100)
+
+summary(data_filtered_wide$perc_change)
+
+# imputations
+data_filtered_wide <- data_filtered %>% 
+  pivot_wider(id_cols = c(comp_id, year), names_from = year, values_from = sales) %>% 
+  mutate(imputed = ifelse(is.na(`2012`) == TRUE | is.na(`2014`) == TRUE, 1, 0)) %>%
+  mutate(`2012` = ifelse(is.na(`2012`) == TRUE, ifelse(is.na(`2011`) == FALSE & is.na(`2013`) == FALSE, (`2011` + `2013`)/2, NA), `2012`),
+         `2012` = ifelse(is.na(`2012`) == TRUE, ifelse(is.na(`2011`) == TRUE & is.na(`2013`) == FALSE, `2013`, NA), `2012`),
+         `2014` = ifelse(is.na(`2014`) == TRUE, ifelse(is.na(`2013`) == FALSE & is.na(`2015`) == FALSE, (`2013` + `2015`)/2, NA), `2014`),
+         `2014` = ifelse(is.na(`2014`) == TRUE, ifelse(is.na(`2013`) == TRUE & is.na(`2015`) == FALSE, `2015`, NA), `2014`)) %>%
+  mutate(total_change = `2014` - `2012`,
+         perc_change = total_change/`2012`*100)
+summary(data_filtered_wide$perc_change)
+
+
+data_filtered <- data_filtered_wide %>%
+  select(comp_id, imputed, total_change, perc_change) %>%
+  right_join(data_filtered, by = "comp_id")
+
+data_filtered <- data_filtered[!is.na(data_filtered$perc_change),]
+summary(data_filtered$perc_change)
+NROW(unique(data_filtered$comp_id))
+## 102932 observations now, 19662 firms
+
+# visualising dependent variable
+quantile(data_filtered$perc_change, probs = c(0.65))
+
+data_filtered %>%
+  filter(perc_change <= 1000) %>%
+  ggplot(aes(x = perc_change)) + geom_density() +
+  geom_vline(xintercept = 35, color = "blue")
+  
+# creating fast growth binary - main dependent variable
+data_filtered <- data_filtered %>%
+  mutate(fast_growth = ifelse(perc_change >= 35, 1, 0))
+
+data_filtered$fast_growth_f <- as.factor(data_filtered$fast_growth)
+
+summary(data_filtered$fast_growth)
+table(data_filtered$fast_growth_f)
+data_filtered %>%
+  select(comp_id, fast_growth) %>%
+  unique() %>%
+  group_by(fast_growth) %>%
+  dplyr::summarize(n_firms = n())
+
+
+
