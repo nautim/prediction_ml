@@ -1242,5 +1242,35 @@ fn <- sum(data_holdout$rf_f_prediction_class == "X0" & data_holdout$fast_growth_
 (fp*FP + fn*FN)/length(data_holdout$fast_growth_f)
 
 
+# Confusion table on holdout with optimal threshold
+holdout_prediction <-
+  ifelse(data_holdout$rf_p_prediction < best_tresholds[["rf_p"]], "X0", "X1") %>%
+  factor(levels = c("X0", "X1"))
+cm_object4 <- confusionMatrix(holdout_prediction, data_holdout$fast_growth_f)
+cm4 <- cm_object4$table
+cm4
+
+
+####### 
+####### summary results
+####### 
+
+nvars[["rf_p"]] <- length(rfvars)
+
+summary_results <- data.frame("Number of predictors" = unlist(nvars),
+                              "CV RMSE" = unlist(CV_RMSE),
+                              "CV AUC" = unlist(CV_AUC),
+                              "CV threshold" = unlist(best_tresholds),
+                              "CV expected Loss" = unlist(expected_loss))
+
+model_names <- c("Logit X1", "Logit X6",
+                 "Logit LASSO","RF probability")
+summary_results <- summary_results %>%
+  filter(rownames(.) %in% c("X1", "X6", "LASSO", "rf_p"))
+rownames(summary_results) <- model_names
+
+kable(x = summary_results, format = "html", booktabs=TRUE,  digits = 3, row.names = TRUE,
+      linesep = "", col.names = c("Number of predictors", "CV RMSE", "CV AUC",
+                                  "CV threshold", "CV expected Loss"))
 
 
